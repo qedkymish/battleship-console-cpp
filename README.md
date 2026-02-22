@@ -52,4 +52,4 @@ Ships are placed randomly (horizontal or vertical) with validation to prevent:
 
 ### Compile (g++)
 ```bash
-g++ -std=c++17 -Wall -Wextra -pedantic "BattleShip Game.cpp" ChessBoard.cpp Ship.cpp -o battleship
+g++ -std=c++17 -Wall -Wextra -pedantic "BattleshipGame.cpp" ChessBoard.cpp Ship.cpp -o battleship
