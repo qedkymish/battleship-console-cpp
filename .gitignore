@@ -1,0 +1,18 @@
+# Compiled objects
+*.o
+*.obj
+
+# Executables
+battleship
+*.exe
+*.out
+
+# Mac
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Build directories
+build/
+cmake-build-*/
