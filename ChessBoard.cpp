@@ -12,10 +12,11 @@ using namespace std;
 //Constructor to initialize the board
 ChessBoard::ChessBoard()
 {
-    resetBoard();
-
-    //Initialize the variable to zero
+    //Initialize the counters before resetBoard() touches the grids
     totalShips = 0;
+    totalShipParts = 0;
+
+    resetBoard();
 }
 
 //Reset the board to empty spaces (initialize with nullptr)
@@ -25,7 +26,8 @@ void ChessBoard::resetBoard()
     {
         for (int c = 0; c < COLS; c++)
         {
-            board[r][c] = nullptr;  // Initialize with nullptr to represent empty water
+            board[r][c] = nullptr;  //No ship covers this square
+            shots[r][c] = ' ';      //Nothing has been fired at it yet
         }
     }
 }
@@ -34,7 +36,7 @@ void ChessBoard::resetBoard()
 void ChessBoard::displayBoard(bool showShips = false)
 {
     //Display total ships above the board
-    cout << "Total Reamining Ships: " << totalShips << "\n\n";
+    cout << "Total Remaining Ships: " << totalShips << "\n\n";
 
     //Print column headers (A to J)
     cout << "   ";
@@ -51,24 +53,17 @@ void ChessBoard::displayBoard(bool showShips = false)
         cout << (r + 1 < 10 ? " " : "") << r + 1 << " ";
         for (int c = 0; c < COLS; c++)
         {
-            if (board[r][c] != nullptr)
+            if (shots[r][c] != ' ')
             {
-                if (board[r][c]->symbol == 'X' || board[r][c]->symbol == 'O')
-                {
-                    cout << setw(2) << board[r][c]->symbol << " ";  //Show hit or miss
-                }
-                else if (showShips)
-                {
-                    cout << setw(2) << board[r][c]->symbol << " ";  //Show ships
-                }
-                else
-                {
-                    cout << setw(2) << '~' << " ";  //Hide ships, show water
-                }
+                cout << setw(2) << shots[r][c] << " ";          //Show hit or miss
+            }
+            else if (showShips && board[r][c] != nullptr)
+            {
+                cout << setw(2) << board[r][c]->symbol << " ";  //Reveal the ship
             }
             else
             {
-                cout << setw(2) << '~' << " ";
+                cout << setw(2) << '~' << " ";                  //Unknown water
             }
         }
         cout << endl;
@@ -78,34 +73,34 @@ void ChessBoard::displayBoard(bool showShips = false)
 //Process hits and misses
 bool ChessBoard::hitOrMiss(int row, int col)
 {
-    if (board[row][col] != nullptr && board[row][col]->symbol != 'X' && board[row][col]->symbol != 'O')
-    {
-        //Mark the ship as hit
-        cout << "\nYou hit the " << board[row][col]->name << "!\n\n";
-        board[row][col]->symbol = 'X';
-
-        Ship* hitShip = board[row][col];
-
-        //Decrease totalShips only when the ship is hit for the first time
-        if (!hitShip->hasBeenHit)
-        {
-            hitShip->hasBeenHit = true;  //Mark ship as hit
-            totalShips--;  //Decrease the total number of ships
-        }
-        return true;
-    }
-    else if (board[row][col] == nullptr)
-    {
-        //Mark the ship as miss
-        board[row][col] = new Ship("Water", 0, 'O');
-        cout << "\nIt's a miss!\n\n";
-        return false;
-    }
-    else
+    //Already fired at this square
+    if (shots[row][col] != ' ')
     {
         cout << "\nAlready attacked this position.\n\n";
         return false;
     }
+
+    //Open water
+    if (board[row][col] == nullptr)
+    {
+        shots[row][col] = 'O';
+        cout << "\nIt's a miss!\n\n";
+        return false;
+    }
+
+    //A ship covers this square. Record the shot on the square, not on the ship,
+    //so the other squares that ship covers stay hidden.
+    Ship* hitShip = board[row][col];
+    shots[row][col] = 'X';
+    cout << "\nYou hit the " << hitShip->name << "!\n\n";
+
+    //Decrease totalShips only the first time this ship is hit
+    if (!hitShip->hasBeenHit)
+    {
+        hitShip->hasBeenHit = true;
+        totalShips--;
+    }
+    return true;
 }
 
 //Place a ship on the board
