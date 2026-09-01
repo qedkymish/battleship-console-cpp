@@ -19,7 +19,9 @@ public:
     int row, col;
 
     //Constructor
-    Ship(const string &shipName, int s, char sym);
+    //Constructor
+Ship::Ship(const string &shipName, int s, char sym)
+    : name(shipName), size(s), symbol(sym), isVertical(true), hasBeenHit(false), row(0), col(0) {}
 
 };
 
