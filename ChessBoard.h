@@ -10,11 +10,11 @@
 class ChessBoard
 {
 private:
-    static const int ROWS = 10; //Number of rows on the board
-    static const int COLS = 10; //Number of columns on the board
-    Ship* board[ROWS][COLS];    //Change board to store pointers to Ship objects
-    int hitCount;               //Total number of successful hits
-    int totalShipParts;         //Total number of ship parts (used to end the game)
+    Ship* board[ROWS][COLS];    //Non-owning: which ship covers a square, nullptr = open water.
+                                //One ship is aliased by every square it covers, so this array
+                                //must never be mutated to record a shot.
+    char shots[ROWS][COLS];     //What the player has fired at: ' ' untouched, 'X' hit, 'O' miss.
+    int totalShipParts;         //Total number of ship parts placed
     int totalShips;             //Number of whole ships remaining
 
 public:
