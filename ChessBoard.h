@@ -10,6 +10,8 @@
 class ChessBoard
 {
 private:
+    static const int ROWS = 10; //Number of rows on the board
+    static const int COLS = 10; //Number of columns on the board
     Ship* board[ROWS][COLS];    //Non-owning: which ship covers a square, nullptr = open water.
                                 //One ship is aliased by every square it covers, so this array
                                 //must never be mutated to record a shot.
